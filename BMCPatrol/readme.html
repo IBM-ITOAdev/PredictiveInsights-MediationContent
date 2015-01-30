@@ -1,0 +1,117 @@
+<html>
+  <head>
+  <meta charset="UTF-8">
+  <title>logstash for SCAPI - BMC Patrol</title>
+  <link rel="stylesheet" href="http://logstash.net/style.css">
+  </head>
+  <body>
+  <div class="container">
+    <div class="header">
+      <a href="/"><img src="http://logstash.net/images/logo.png" alt="logstash"/></a>
+      <div class="nav">
+        <a href="http://logstash.net/">home</a>
+        <a href="http://logstash.net/docs/1.4.2">docs</a>
+        <a href="http://logstash.net/docs/1.4.2/learn">about</a>
+        <a href="https://github.com/elasticsearch/logstash/issues">bugs</a>
+      </div>
+    </div>
+    <div id="content_right">
+      <!--main content goes here, yo!-->
+      <div class="content_wrapper">
+        <img src="http://logstash.net/images/logstash.png" alt="logstash" class="mascot" style="float: right;"/>
+         <h3>Mediating BMC Patrol data with Logstash</h3>
+
+
+<p>
+This document describes how to mediate BMC Patrol data with Logstash. If you are unfamiliar with the general concepts, please read the background documentation <a href="../docs/logstashForSCAPIgeneral.html">here</a>.
+
+There is also a blog posting which gives an example BMC Patrol use here <a href="https://www.ibm.com/developerworks/community/blogs/09bacdd4-1c84-48df-b590-a6ddbdfe5afa/entry/mediating_bmc_data_to_predictive_insights_with_logstash?lang=en">here</a>
+
+</p>
+
+<h4>Overview</h4>
+<p>
+The Logstash configuration file is <a href="https://github.com/IBM-ITOAdev/PredictiveInsights-MediationContent/blob/master/BMCPatrol/bmcfileSample.conf">here</a>. As in all cases, you should consider this config file as a starting point. In your particular BMCPatrol/SCAPI environment you may have other metrics you wish to include/exclude so modify this file appropriately.
+</p>
+<p>The basic flow is of data from BMC Patrol files in a specified directory through logstash and the processed data delivered to one or more files in the specified output directory
+</p>
+
+<h4>File input</h4>
+An example of the supported file format is shown here
+<pre>
+server002/MEMORY.MEMORY/MEMFreeMem
+        Thu Nov  6 12:40:00 2014 137356
+        Thu Nov  6 12:41:00 2014 138552
+        ...
+        Thu Nov  6 12:45:00 2014 132500
+server002/CPU.CPU/CPUCpuUtil
+        Thu Nov  6 13:23:00 2014 58.7869
+        Thu Nov  6 13:24:00 2014 57.3054
+        ...
+        Thu Nov  6 13:31:00 2014 53.9605
+server002/MEMORY.MEMORY/MEMUsedMem
+        Thu Nov  6 12:40:00 2014 237356
+        Thu Nov  6 12:41:00 2014 238552
+        ...
+        Thu Nov  6 12:44:00 2014 232472
+server002/MEMORY.MEMORY/MEMFreeMem
+        Thu Nov  6 12:45:00 2014 105888
+        Thu Nov  6 12:46:00 2014 132940
+        ...
+        Thu Nov  6 12:51:00 2014 166220
+Total matched parameters: 4 
+</pre>
+<p>
+
+Sometimes all your data from Patrol, for particular time periods, may be in one file. Other times there may be separate files per server, for that same time period. Logstash will need to process all files covering the same time period together. This is because it must sort and pivot the data for a time period together, and output to appropriate files. For example, if you had the following files
+</p>
+
+<pre>
+1419321600__server1.txt  
+1419321600__server2.txt  
+1419321600__server3.txt
+1419325200__server1.txt  
+1419325200__server2.txt  
+1419325200__server3.txt
+</pre>
+where the first field is epoch time, then Logstash will process the first three files together, output results, then process the second three..
+
+The key point is that the input files should be named following the above format essentially, which is a timestamp, or other prefix field which can be used to group files covering same time ranges, followed by "__" and whatever other strings you want. Logstash will gather all the files with the the same prefix and process them together.
+</p>
+<p>
+<h4>Key processing steps</h4>
+<p>
+Look at the example .conf file previously mentioned to follow the flow. Simply,  <code>scabmcfile</code> operator contains the logic to read, sort and pivot the data. Then pivoted data is then sent as a stream of events are sent down the logstash processing chain, where they are routed to multiple csv output files by the <code>scacsv</code> operators. For other details, see the doc pages for the specific operators.
+
+<h4>Running logstash for Patrol</h4>
+</p>
+<pre>
+logstash agent -f bmcfileSample.conf --pluginpath /path/to/your/logstash/plugins
+</pre>
+Then place files in the specified input directory.
+
+<h4>Caveats</h4>
+Sorting and pivoting can be expensive in terms of cpu and memory. Therefore, it is better to feed files in smaller chunks of time e.g. 5min files , than say, individual files spanning multiple days. You can do the larger ones, but at a cost of way mmuch more memory.
+
+      </div>
+      <div class="clear">
+      </div>
+    </div>
+  </div>
+  <!--closes main container div-->
+  <div class="clear">
+  </div>
+  <div class="footer">
+    <p>
+      Hello! I'm your friendly footer. If you're actually reading this, I'm impressed.
+    </p>
+  </div>
+
+  <noscript>
+    <div style="display:inline;">
+      <img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/985891458/?value=0&amp;guid=ON&amp;script=0"/>
+    </div>
+  </noscript>
+  <script src="/js/patch.js?1.4.2"></script>
+  </body>
+</html>
