@@ -39,14 +39,14 @@ Once you have these, working with your data is essentially a matter of modifying
 
 <h3>SCAPI Logstash plug-ins</h3>
 <p>
-In addition to base Logstash capability, there are a number of custom plugins which we have created. These provide functionality to make it easier to https://developer.ibm.com/itoa/resources/logstash-plugins/use Logstash with PI, e.g. <code>scacsv</code> which outputs files compliant with PI requirements, as well as plugins specific to format e.g. <code>scabmcfile</code> which encapsulate significant amounts of functionality particular to a a specific data source.
+In addition to base Logstash capability, there are a number of custom plugins which we have created. These provide functionality to make it easier to use Logstash with PI, e.g. <code>scacsv</code> which outputs files compliant with PI requirements, as well as plugins specific to format e.g. <code>scabmcfile</code> which encapsulate significant amounts of functionality particular to a a specific data source.
 </p>
 <p>
-The current set of plugins developed specifically for use with SCAPI are described <a href="https://github.com/IBM-ITOAdev/LogstashPlugins/blob/master/docs/readme.html">here</a>
+The current set of plugins developed specifically for use with SCAPI are described <a href=" http://htmlpreview.github.com/?https://github.com/IBM-ITOAdev/LogstashPlugins/blob/master/docs/readme.html">here</a>
 </p>
 <p>These plugins should be installed on the system where you will be running Logstash</p>
 Installation is simply a matter of downloading the plugin code and placing it in an appropriate directory. The latest plug-ins are available here <a href="https://github.com/IBM-ITOAdev/">LogstashPlugins repository</a>. Each plugin is prefixed by <i>logstash-</i>, and there are <i>inputs, filters</i> and <i>outputs</i>.
-Download the entire <i>logstash</i> dir. An easy way from github is to select the 'Download ZIP' button on the right hand side of the page. This will give you a zip file with all the contents. Place the downloaded logstash directory in a location of your choosing e.g.</p>
+Place each downloaded logstash plugin in a location of your choosing e.g.</p>
  <code>/path/to/my/logstashPlugins/logstash</code>
 <p>
 At runtime you will reference this plugin path as command line argument when you start Logstash
